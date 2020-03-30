@@ -1,6 +1,6 @@
 # Directories
 .nyc_output/
-build/
+# build/
 node_modules/
 
 # Files
