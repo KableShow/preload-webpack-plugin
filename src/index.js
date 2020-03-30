@@ -22,6 +22,7 @@ const defaultOptions = require('./lib/default-options');
 const determineAsValue = require('./lib/determine-as-value');
 const extractChunks = require('./lib/extract-chunks');
 const insertLinksIntoHead = require('./lib/insert-links-into-head');
+const insertLinksIntoScript = require('./lib/insert-links-into-script')
 
 class PreloadPlugin {
   constructor(options) {
@@ -61,6 +62,7 @@ class PreloadPlugin {
     const sortedFilteredFiles = filteredFiles.sort();
 
     const links = [];
+    const hrefs = [];
     const publicPath = compilation.outputOptions.publicPath || '';
     for (const file of sortedFilteredFiles) {
       const href = `${publicPath}${file}`;
@@ -95,10 +97,14 @@ class PreloadPlugin {
         attributes,
         elementName: 'link',
       });
+      hrefs.push(href);
       links.push(linkElementString);
     }
 
-    htmlPluginData.html = insertLinksIntoHead({
+    htmlPluginData.html = options.rel === 'prefetch' ? insertLinksIntoScript({
+      hrefs,
+      html: htmlPluginData.html,
+    }) : insertLinksIntoHead({
       links,
       html: htmlPluginData.html,
     });
